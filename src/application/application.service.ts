@@ -3,7 +3,6 @@ import {
   ForbiddenException,
   Injectable,
   NotFoundException,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { CreateApplicationDto } from './dto/create-application.dto';
 import { UpdateApplicationDto } from './dto/update-application.dto';
@@ -11,9 +10,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Application } from './entities/application.entity';
 import { Repository } from 'typeorm';
 import { Job } from 'src/job/entities/job.entity';
-import { application } from 'express';
 import { ApplicationStatus } from 'src/common/enums/application.status.enum';
-import { groupBy } from 'rxjs';
 
 @Injectable()
 export class ApplicationService {
@@ -83,7 +80,7 @@ export class ApplicationService {
       .innerJoinAndSelect('job.company', 'company')
       .leftJoinAndSelect('job.skills', 'skill')
       .where('application.id = :applicationId', { applicationId })
-      .andWhere('owner.id = :userId', { userId })
+      .andWhere('user.id = :userId', { userId })
       .getOne();
 
     if (!application) throw new NotFoundException('appliacation not found');
@@ -118,7 +115,7 @@ export class ApplicationService {
       .createQueryBuilder('application')
       .innerJoin('appliaction.user', 'user')
       .where('application.id = :applicationId', { applicationId })
-      .andWhere('owner.id = :userId', { userId })
+      .andWhere('user.id = :userId', { userId })
       .getOne();
 
     if (!application) throw new NotFoundException();
