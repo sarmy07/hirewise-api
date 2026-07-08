@@ -33,7 +33,7 @@ export class SkillController {
   @Get()
   @ApiOperation({ summary: 'Get all skills with usage counts' })
   findAll() {
-    return this.skillService.findAll();
+    return this.skillService.findAllWithQueryBuilder();
   }
 
   @Get(':id')

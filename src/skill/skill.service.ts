@@ -28,16 +28,22 @@ export class SkillService {
   //   return skill;
   // }
 
-  findAllWithQueryBuilder() {
-    return this.skillRepository
+  async findAllWithQueryBuilder() {
+    const result = await this.skillRepository
       .createQueryBuilder('skill')
       .leftJoin('skill.users', 'user')
       .leftJoin('skill.jobs', 'job')
       .addSelect('COUNT(DISTINCT user.id)', 'userCount')
-      .addSelect('COUNT(DISTINCT job.id', 'jobCount')
+      .addSelect('COUNT(DISTINCT job.id)', 'jobCount')
       .groupBy('skill.id')
       .orderBy('skill.name', 'ASC')
       .getRawAndEntities();
+
+    return result.entities.map((skill, index) => ({
+      ...skill,
+      userCount: Number(result.raw[index]?.userCount ?? 0),
+      jobCount: Number(result.raw[index]?.jobCount ?? 0),
+    }));
   }
 
   async findAll() {
